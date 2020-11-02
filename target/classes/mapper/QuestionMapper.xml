@@ -1,0 +1,628 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hty.forum.mapper.QuestionMapper">
+  <resultMap id="BaseResultMap" type="com.hty.forum.entity.Question">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="title" jdbcType="VARCHAR" property="title" />
+    <result column="gmt_create" jdbcType="BIGINT" property="gmtCreate" />
+    <result column="gmt_modified" jdbcType="BIGINT" property="gmtModified" />
+    <result column="comment_count" jdbcType="INTEGER" property="commentCount" />
+    <result column="view_count" jdbcType="INTEGER" property="viewCount" />
+    <result column="like_count" jdbcType="INTEGER" property="likeCount" />
+    <result column="tag" jdbcType="VARCHAR" property="tag" />
+    <result column="creator" jdbcType="INTEGER" property="creator" />
+    <result column="category" jdbcType="INTEGER" property="category" />
+    <result column="topic" jdbcType="INTEGER" property="topic" />
+    <result column="top" jdbcType="INTEGER" property="top" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.hty.forum.entity.Question">
+    <result column="description" jdbcType="LONGVARCHAR" property="description" />
+  </resultMap>
+  <resultMap id="questionUserMapUserId" type="com.hty.forum.entity.Question">
+    <id column="qid" property="id"/>
+    <result column="title" property="title"/>
+    <result column="description" property="description"/>
+    <result column="gct" property="gmtCreate"/>
+    <result column="gmf" property="gmtModified"/>
+    <result column="tag" property="tag"/>
+    <result column="creator" property="creator"/>
+    <result column="view_count" property="viewCount"/>
+    <result column="like_count" property="likeCount"/>
+    <result column="comment_count" property="commentCount"/>
+    <result column="category" property="category"/>
+    <result column="top" property="top"/>
+    <!--查询出来的Question中也关联User的相关信息，正常写法应该是分开查询再整合-->
+    <association javaType="com.hty.forum.entity.User" property="user">
+      <result column="name" property="name"/>
+      <result column="account_id" property="accountId"/>
+      <result column="token" property="token"/>
+      <result column="uct" property="gmtCreate"/>
+      <result column="umt" property="gmtModified"/>
+      <result column="avatar_url" property="avatarUrl"/>
+      <result column="bio" property="bio"/>
+      <result column="location" property="location"/>
+      <result column="company" property="company"/>
+      <result column="rank" property="rank"/>
+    </association>
+  </resultMap>
+
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    id, title, gmt_create, gmt_modified, comment_count, view_count, like_count, tag,
+    creator, category, topic, top
+  </sql>
+  <sql id="Blob_Column_List" >
+    description
+  </sql>
+  <select id="selectByExampleWithBLOBs" resultMap="ResultMapWithBLOBs" parameterType="com.hty.forum.entity.example.QuestionExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from question
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.hty.forum.entity.example.QuestionExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from question
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.lang.Integer" >
+    select
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from question
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from question
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.hty.forum.entity.example.QuestionExample" >
+    delete from question
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.hty.forum.entity.Question" >
+    insert into question (id, title, gmt_create,
+      gmt_modified, comment_count, view_count,
+      like_count, tag, creator,
+      category, topic, top,
+      description)
+    values (#{id,jdbcType=INTEGER}, #{title,jdbcType=VARCHAR}, #{gmtCreate,jdbcType=BIGINT},
+      #{gmtModified,jdbcType=BIGINT}, #{commentCount,jdbcType=INTEGER}, #{viewCount,jdbcType=INTEGER},
+      #{likeCount,jdbcType=INTEGER}, #{tag,jdbcType=VARCHAR}, #{creator,jdbcType=INTEGER},
+      #{category,jdbcType=INTEGER}, #{topic,jdbcType=INTEGER}, #{top,jdbcType=INTEGER},
+      #{description,jdbcType=LONGVARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hty.forum.entity.Question" >
+    insert into question
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="title != null" >
+        title,
+      </if>
+      <if test="gmtCreate != null" >
+        gmt_create,
+      </if>
+      <if test="gmtModified != null" >
+        gmt_modified,
+      </if>
+      <if test="commentCount != null" >
+        comment_count,
+      </if>
+      <if test="viewCount != null" >
+        view_count,
+      </if>
+      <if test="likeCount != null" >
+        like_count,
+      </if>
+      <if test="tag != null" >
+        tag,
+      </if>
+      <if test="creator != null" >
+        creator,
+      </if>
+      <if test="category != null" >
+        category,
+      </if>
+      <if test="topic != null" >
+        topic,
+      </if>
+      <if test="top != null" >
+        top,
+      </if>
+      <if test="description != null" >
+        description,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="title != null" >
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="gmtCreate != null" >
+        #{gmtCreate,jdbcType=BIGINT},
+      </if>
+      <if test="gmtModified != null" >
+        #{gmtModified,jdbcType=BIGINT},
+      </if>
+      <if test="commentCount != null" >
+        #{commentCount,jdbcType=INTEGER},
+      </if>
+      <if test="viewCount != null" >
+        #{viewCount,jdbcType=INTEGER},
+      </if>
+      <if test="likeCount != null" >
+        #{likeCount,jdbcType=INTEGER},
+      </if>
+      <if test="tag != null" >
+        #{tag,jdbcType=VARCHAR},
+      </if>
+      <if test="creator != null" >
+        #{creator,jdbcType=INTEGER},
+      </if>
+      <if test="category != null" >
+        #{category,jdbcType=INTEGER},
+      </if>
+      <if test="topic != null" >
+        #{topic,jdbcType=INTEGER},
+      </if>
+      <if test="top != null" >
+        #{top,jdbcType=INTEGER},
+      </if>
+      <if test="description != null" >
+        #{description,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.hty.forum.entity.example.QuestionExample" resultType="java.lang.Integer" >
+    select count(*) from question
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update question
+    <set >
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.title != null" >
+        title = #{record.title,jdbcType=VARCHAR},
+      </if>
+      <if test="record.gmtCreate != null" >
+        gmt_create = #{record.gmtCreate,jdbcType=BIGINT},
+      </if>
+      <if test="record.gmtModified != null" >
+        gmt_modified = #{record.gmtModified,jdbcType=BIGINT},
+      </if>
+      <if test="record.commentCount != null" >
+        comment_count = #{record.commentCount,jdbcType=INTEGER},
+      </if>
+      <if test="record.viewCount != null" >
+        view_count = #{record.viewCount,jdbcType=INTEGER},
+      </if>
+      <if test="record.likeCount != null" >
+        like_count = #{record.likeCount,jdbcType=INTEGER},
+      </if>
+      <if test="record.tag != null" >
+        tag = #{record.tag,jdbcType=VARCHAR},
+      </if>
+      <if test="record.creator != null" >
+        creator = #{record.creator,jdbcType=INTEGER},
+      </if>
+      <if test="record.category != null" >
+        category = #{record.category,jdbcType=INTEGER},
+      </if>
+      <if test="record.topic != null" >
+        topic = #{record.topic,jdbcType=INTEGER},
+      </if>
+      <if test="record.top != null" >
+        top = #{record.top,jdbcType=INTEGER},
+      </if>
+      <if test="record.description != null" >
+        description = #{record.description,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExampleWithBLOBs" parameterType="map" >
+    update question
+    set id = #{record.id,jdbcType=INTEGER},
+    title = #{record.title,jdbcType=VARCHAR},
+    gmt_create = #{record.gmtCreate,jdbcType=BIGINT},
+    gmt_modified = #{record.gmtModified,jdbcType=BIGINT},
+    comment_count = #{record.commentCount,jdbcType=INTEGER},
+    view_count = #{record.viewCount,jdbcType=INTEGER},
+    like_count = #{record.likeCount,jdbcType=INTEGER},
+    tag = #{record.tag,jdbcType=VARCHAR},
+    creator = #{record.creator,jdbcType=INTEGER},
+    category = #{record.category,jdbcType=INTEGER},
+    topic = #{record.topic,jdbcType=INTEGER},
+    top = #{record.top,jdbcType=INTEGER},
+    description = #{record.description,jdbcType=LONGVARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update question
+    set id = #{record.id,jdbcType=INTEGER},
+    title = #{record.title,jdbcType=VARCHAR},
+    gmt_create = #{record.gmtCreate,jdbcType=BIGINT},
+    gmt_modified = #{record.gmtModified,jdbcType=BIGINT},
+    comment_count = #{record.commentCount,jdbcType=INTEGER},
+    view_count = #{record.viewCount,jdbcType=INTEGER},
+    like_count = #{record.likeCount,jdbcType=INTEGER},
+    tag = #{record.tag,jdbcType=VARCHAR},
+    creator = #{record.creator,jdbcType=INTEGER},
+    category = #{record.category,jdbcType=INTEGER},
+    topic = #{record.topic,jdbcType=INTEGER},
+    top = #{record.top,jdbcType=INTEGER}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hty.forum.entity.Question" >
+    update question
+    <set >
+      <if test="title != null" >
+        title = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="gmtCreate != null" >
+        gmt_create = #{gmtCreate,jdbcType=BIGINT},
+      </if>
+      <if test="gmtModified != null" >
+        gmt_modified = #{gmtModified,jdbcType=BIGINT},
+      </if>
+      <if test="commentCount != null" >
+        comment_count = #{commentCount,jdbcType=INTEGER},
+      </if>
+      <if test="viewCount != null" >
+        view_count = #{viewCount,jdbcType=INTEGER},
+      </if>
+      <if test="likeCount != null" >
+        like_count = #{likeCount,jdbcType=INTEGER},
+      </if>
+      <if test="tag != null" >
+        tag = #{tag,jdbcType=VARCHAR},
+      </if>
+      <if test="creator != null" >
+        creator = #{creator,jdbcType=INTEGER},
+      </if>
+      <if test="category != null" >
+        category = #{category,jdbcType=INTEGER},
+      </if>
+      <if test="topic != null" >
+        topic = #{topic,jdbcType=INTEGER},
+      </if>
+      <if test="top != null" >
+        top = #{top,jdbcType=INTEGER},
+      </if>
+      <if test="description != null" >
+        description = #{description,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.hty.forum.entity.Question" >
+    update question
+    set title = #{title,jdbcType=VARCHAR},
+      gmt_create = #{gmtCreate,jdbcType=BIGINT},
+      gmt_modified = #{gmtModified,jdbcType=BIGINT},
+      comment_count = #{commentCount,jdbcType=INTEGER},
+      view_count = #{viewCount,jdbcType=INTEGER},
+      like_count = #{likeCount,jdbcType=INTEGER},
+      tag = #{tag,jdbcType=VARCHAR},
+      creator = #{creator,jdbcType=INTEGER},
+      category = #{category,jdbcType=INTEGER},
+      topic = #{topic,jdbcType=INTEGER},
+      top = #{top,jdbcType=INTEGER},
+      description = #{description,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hty.forum.entity.Question" >
+    update question
+    set title = #{title,jdbcType=VARCHAR},
+      gmt_create = #{gmtCreate,jdbcType=BIGINT},
+      gmt_modified = #{gmtModified,jdbcType=BIGINT},
+      comment_count = #{commentCount,jdbcType=INTEGER},
+      view_count = #{viewCount,jdbcType=INTEGER},
+      like_count = #{likeCount,jdbcType=INTEGER},
+      tag = #{tag,jdbcType=VARCHAR},
+      creator = #{creator,jdbcType=INTEGER},
+      category = #{category,jdbcType=INTEGER},
+      topic = #{topic,jdbcType=INTEGER},
+      top = #{top,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <update id="increaseCommentCount" parameterType="java.lang.Integer">
+    update question set comment_count = comment_count + 1 where id = #{id}
+  </update>
+
+  <update id="increaseLikeCount" parameterType="java.lang.Integer">
+    update question set like_count = like_count + 1 where id = #{id}
+  </update>
+
+  <update id="increaseViewCount" parameterType="java.lang.Integer">
+    update question set view_count = view_count + 1 where id = #{id}
+  </update>
+
+  <select id="selectQuestionWithUserById" parameterType="java.lang.Integer" resultMap="questionUserMapUserId" resultType="com.hty.forum.entity.Question">
+    select q.id qid, q.title, q.description, q.gmt_create gct, q.gmt_modified gmf, tag, q.creator,
+        q.view_count, q.like_count, q.comment_count, q.category, q.top,
+        u.id uid, u.account_id account, u.name, u.token, u.rank,
+        u.gmt_create uct, u.gmt_modified umt, u.avatar_url, u.bio, u.location, u.company
+    from question q, user u
+    where q.creator = u.id and q.id = #{id}
+  </select>
+
+  <select id="selectRelated" resultMap="BaseResultMap">
+    SELECT * FROM question WHERE tag REGEXP #{sqlRegexp} AND id != #{id} ORDER BY gmt_create DESC limit 18;
+  </select>
+
+  <select id="listQuestionWithUserBySearch" resultMap="questionUserMapUserId">
+    select q.id qid, q.title, q.description, q.gmt_create gct, q.gmt_modified gmf, tag, q.creator,
+        q.view_count, q.like_count, q.comment_count, q.category, q.top,
+        u.id uid, u.account_id account, u.name, u.token, u.rank,
+        u.gmt_create uct, u.gmt_modified umt, u.avatar_url, u.bio, u.location, u.company
+    from question q, `user` u
+    <where>
+      q.creator = u.id
+      <if test="category!=null and category!=''">
+        and category = #{category}
+      </if>
+      <if test="search!=null and search!=''">
+        and title like concat(concat('%',#{search}),'%')
+      </if>
+      <if test="tag != null and tag != ''">
+        and tag REGEXP #{tag}
+      </if>
+    </where>
+    order by gct DESC
+  </select>
+
+  <select id="listQuestionZeroHot" resultMap="questionUserMapUserId" resultType="com.hty.forum.entity.Question">
+    select q.id qid, q.title, q.description, q.gmt_create gct, q.gmt_modified gmf, tag, q.creator,
+      q.view_count, q.like_count, q.comment_count, q.category, q.top,
+      u.id uid, u.account_id account, u.name, u.token, u.rank,
+      u.gmt_create uct, u.gmt_modified umt, u.avatar_url, u.bio, u.location, u.company
+    from question q, `user` u
+    <where>
+      q.creator = u.id
+      <if test="tag != null and tag != ''">
+        and tag regexp #{tag}
+      </if>
+      <if test="category != null and category != ''">
+        and category = #{category}
+      </if>
+    </where>
+    and q.comment_count = 0 order by gct desc
+  </select>
+
+  <select id="listQuestionMostLike" resultMap="questionUserMapUserId" resultType="com.hty.forum.entity.Question">
+    select q.id qid, q.title, q.description, q.gmt_create gct, q.gmt_modified gmf, tag, q.creator,
+      q.view_count, q.like_count, q.comment_count, q.category, q.top,
+      u.id uid, u.account_id account, u.name, u.token, u.rank,
+      u.gmt_create uct, u.gmt_modified umt, u.avatar_url, u.bio, u.location, u.company
+    from question q, `user` u
+    <where>
+      q.creator = u.id
+      <if test="tag != null and tag != ''">
+        and tag regexp #{tag}
+      </if>
+      <if test="category != null and category != ''">
+        and category = #{category}
+      </if>
+    </where>
+    order by q.like_count DESC, gct desc
+  </select>
+
+  <select id="listQuestionMostComment" resultMap="questionUserMapUserId" resultType="com.hty.forum.entity.Question">
+    select q.id qid, q.title, q.description, q.gmt_create gct, q.gmt_modified gmf, tag, q.creator,
+    q.view_count, q.like_count, q.comment_count, q.category, q.top,
+    u.id uid, u.account_id account, u.name, u.token, u.rank,
+    u.gmt_create uct, u.gmt_modified umt, u.avatar_url, u.bio, u.location, u.company
+    from question q, `user` u
+    <where>
+      q.creator = u.id
+      <if test="tag != null and tag != ''">
+        and tag regexp #{tag}
+      </if>
+      <if test="category != null and category != ''">
+        and category = #{category}
+      </if>
+    </where>
+    order by q.comment_count DESC, gct desc
+  </select>
+
+  <select id="listQuestionViewHot" resultMap="questionUserMapUserId" resultType="com.hty.forum.entity.Question">
+    select q.id qid, q.title, q.description, q.gmt_create gct, q.gmt_modified gmf, tag, q.creator,
+    q.view_count, q.like_count, q.comment_count, q.category, q.top,
+    u.id uid, u.account_id account, u.name, u.token, u.rank,
+    u.gmt_create uct, u.gmt_modified umt, u.avatar_url, u.bio, u.location, u.company
+    from question q, `user` u
+    <where>
+      q.creator = u.id
+      <if test="tag != null and tag != ''">
+        and tag regexp #{tag}
+      </if>
+      <if test="category != null and category != ''">
+        and category = #{category}
+      </if>
+    </where>
+    order by q.view_count DESC, gct desc
+  </select>
+
+  <select id="listQuestionWithUserByCategory" resultMap="questionUserMapUserId" resultType="com.hty.forum.entity.Question">
+    select q.id qid, q.title, q.description, q.gmt_create gct, q.gmt_modified gmf, tag, q.creator,
+    q.view_count, q.like_count, q.comment_count, q.category, q.top,
+    u.id uid, u.account_id account, u.name, u.token, u.rank,
+    u.gmt_create uct, u.gmt_modified umt, u.avatar_url, u.bio, u.location, u.company
+    from question q, user u
+    where q.creator = u.id and q.category = #{category}
+    order by gct desc
+  </select>
+
+  <select id="selectNewQuestions" resultMap="questionUserMapUserId">
+    select * from question order by gmt_create desc limit 0,#{count}
+  </select>
+
+  <select id="selectRecommendQuestions" resultMap="questionUserMapUserId">
+    select * from question order by view_count desc
+  </select>
+
+  <select id="listQuestionWithUserByUserId" resultMap="questionUserMapUserId" parameterType="java.lang.Integer">
+    select q.id qid, q.title, q.description, q.gmt_create gct, q.gmt_modified gmf, tag, q.creator,
+      q.view_count, q.like_count, q.comment_count, q.category, q.top,
+      u.id uid, u.account_id account, u.name, u.token, u.rank,
+      u.gmt_create uct, u.gmt_modified umt, u.avatar_url, u.bio, u.location, u.company
+    from question q, user u
+    WHERE q.creator=u.id and q.creator=#{id}
+    ORDER  by gct DESC
+  </select>
+
+  <select id="listQuestionCollectedWithUser" resultMap="questionUserMapUserId" resultType="com.hty.forum.entity.Question">
+    select q.id qid, q.title, q.description, q.gmt_create gct, q.gmt_modified gmf, tag, q.creator,
+      q.view_count, q.like_count, q.comment_count, q.category, q.top,
+      u.id uid, u.account_id account, u.name, u.token, u.rank,
+      u.gmt_create uct, u.gmt_modified umt, u.avatar_url, u.bio, u.location, u.company
+    from question q, user u
+    where q.creator = u.id
+    and q.id in
+    <foreach item="groups" index="index" collection="list" open="(" close=")" separator=",">
+      #{groups}
+    </foreach>
+    order by gct desc
+  </select>
+  
+  <select id="listQuestionByTopic" parameterType="java.lang.Integer">
+    select id, tag from question where topic = #{id}
+  </select>
+
+  <select id="findQuestionsWithUserByTopicAll" resultMap="questionUserMapUserId" resultType="com.hty.forum.entity.Question">
+    select q.id qid, q.title, q.description, q.gmt_create gct, q.gmt_modified gmf, tag, q.creator,
+      q.view_count, q.like_count, q.comment_count, q.category, q.top,
+      u.id uid, u.account_id account, u.name, u.token, u.rank,
+      u.gmt_create uct, u.gmt_modified umt, u.avatar_url, u.bio, u.location, u.company
+    from question q, user u
+    where q.creator = u.id and q.topic = #{id}
+    order by gmt desc
+  </select>
+
+  <select id="findQuestionsWithUserByTopicJH" resultMap="questionUserMapUserId" resultType="com.hty.forum.entity.Question">
+    select q.id qid, q.title, q.description, q.gmt_create gct, q.gmt_modified gmf, tag, q.creator,
+      q.view_count, q.like_count, q.comment_count, q.category, q.top,
+      u.id uid, u.account_id account, u.name, u.token, u.rank,
+      u.gmt_create uct, u.gmt_modified umt, u.avatar_url, u.bio, u.location, u.company
+    from question q, user u
+    where q.creator = u.id and q.topic = #{id}
+    order by q.view_count desc
+  </select>
+
+  <select id="findQuestionsWithUserByTopicTJ" resultMap="questionUserMapUserId" resultType="com.hty.forum.entity.Question">
+    select q.id qid, q.title, q.description, q.gmt_create gct, q.gmt_modified gmf, tag, q.creator,
+      q.view_count, q.like_count, q.comment_count, q.category, q.top,
+      u.id uid, u.account_id account, u.name, u.token, u.rank,
+      u.gmt_create uct, u.gmt_modified umt, u.avatar_url, u.bio, u.location, u.company
+    from question q, user u
+    where q.creator = u.id and q.topic = #{id}
+    order by q.like_count desc
+  </select>
+
+  <select id="findQuestionsWithUserByTopicWT" resultMap="questionUserMapUserId" resultType="com.hty.forum.entity.Question">
+    select q.id qid, q.title, q.description, q.gmt_create gct, q.gmt_modified gmf, tag, q.creator,
+      q.view_count, q.like_count, q.comment_count, q.category, q.top,
+      u.id uid, u.account_id account, u.name, u.token, u.rank,
+      u.gmt_create uct, u.gmt_modified umt, u.avatar_url, u.bio, u.location, u.company
+    from question q, user u
+    where q.creator = u.id and q.topic = #{id}
+    order by q.gmt_create desc
+  </select>
+
+
+</mapper>
